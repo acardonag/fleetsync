@@ -13,8 +13,8 @@ export const firebaseConfig = {
 // Lista de usuarios administradores autorizados (emails de Google)
 // IMPORTANTE: Agrega aquí los emails de los usuarios que podrán acceder a la aplicación
 export const ADMIN_USERS = [
-  // Ejemplo: "admin@tudominio.com"
-  "acg1606@gmail.com"
+  "acg1606@gmail.com",
+  "rucardona16@gmail.com"
 ]
 
 // INSTRUCCIONES PARA CONFIGURAR FIREBASE:
