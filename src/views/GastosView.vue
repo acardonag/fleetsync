@@ -564,7 +564,7 @@
 <script setup>
 import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { auth } from '../firebase/auth'
-import { db } from '../firebase/db'
+import { getAllDocuments, createDocument, updateDocument, deleteDocument } from '../firebase/db'
 import { Chart, registerables } from 'chart.js'
 
 Chart.register(...registerables)
@@ -1134,7 +1134,7 @@ async function saveGasto() {
     }
 
     if (isEditing.value) {
-      await db.updateDocument('gastos', editingId.value, gastoData)
+      await updateDocument('gastos', editingId.value, gastoData)
       const index = gastos.value.findIndex(g => g.id === editingId.value)
       if (index !== -1) {
         gastos.value[index] = { ...gastos.value[index], ...gastoData }
@@ -1142,8 +1142,8 @@ async function saveGasto() {
     } else {
       gastoData.createdAt = new Date()
       gastoData.createdBy = auth.currentUser?.email || 'unknown'
-      const docId = await db.createDocument('gastos', gastoData)
-      gastos.value.push({ id: docId, ...gastoData })
+      const result = await createDocument('gastos', gastoData)
+      gastos.value.push(result)
     }
 
     closeModal()
@@ -1160,7 +1160,7 @@ async function deleteGasto() {
   deleting.value = true
 
   try {
-    await db.deleteDocument('gastos', deletingGasto.value.id)
+    await deleteDocument('gastos', deletingGasto.value.id)
     gastos.value = gastos.value.filter(g => g.id !== deletingGasto.value.id)
     closeDeleteModal()
     updateCharts()
@@ -1197,10 +1197,10 @@ function applyFilters() {
 onMounted(async () => {
   try {
     const [vehiculosData, conductoresData, gastosData, ingresosData] = await Promise.all([
-      db.getAllDocuments('vehiculos'),
-      db.getAllDocuments('conductores'),
-      db.getAllDocuments('gastos'),
-      db.getAllDocuments('ingresos')
+      getAllDocuments('vehiculos'),
+      getAllDocuments('conductores'),
+      getAllDocuments('gastos'),
+      getAllDocuments('ingresos')
     ])
 
     vehiculos.value = vehiculosData
