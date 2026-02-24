@@ -55,6 +55,7 @@
             </div>
             <div class="conductor-main-info">
               <h4 class="conductor-name">{{ conductor.nombre }}</h4>
+              <p v-if="conductor.numeroDocumento" class="conductor-document">📋 {{ conductor.numeroDocumento }}</p>
               <p class="conductor-phone">📞 {{ conductor.telefono }}</p>
               <p class="conductor-experience">🚗 {{ conductor.experiencia }}</p>
             </div>
@@ -121,6 +122,17 @@
                   type="text" 
                   class="form-input" 
                   placeholder="Juan Pérez González"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Número de Documento *</label>
+                <input 
+                  v-model="form.numeroDocumento" 
+                  type="text" 
+                  class="form-input" 
+                  placeholder="1234567890"
                   required
                 />
               </div>
@@ -331,6 +343,7 @@
           <div class="details-grid">
             <div class="detail-section">
               <h4>Información Personal</h4>
+              <p v-if="viewingConductor.numeroDocumento"><strong>Número de documento:</strong> {{ viewingConductor.numeroDocumento }}</p>
               <p><strong>Dirección:</strong> {{ viewingConductor.direccion }}</p>
               <p><strong>Fecha inicio contrato:</strong> {{ formatDate(viewingConductor.fechaInicio) }}</p>
             </div>
@@ -382,6 +395,7 @@ const viewingConductor = ref(null)
 
 const form = ref({
   nombre: '',
+  numeroDocumento: '',
   telefono: '',
   direccion: '',
   experiencia: '',
@@ -438,6 +452,7 @@ async function saveConductor() {
     // Prepare conductor data
     const conductorData = {
       nombre: form.value.nombre,
+      numeroDocumento: form.value.numeroDocumento,
       telefono: form.value.telefono,
       direccion: form.value.direccion,
       experiencia: form.value.experiencia,
@@ -502,6 +517,7 @@ function editConductor(conductor) {
   editingConductor.value = conductor
   form.value = {
     nombre: conductor.nombre,
+    numeroDocumento: conductor.numeroDocumento || '',
     telefono: conductor.telefono,
     direccion: conductor.direccion,
     experiencia: conductor.experiencia,
@@ -556,6 +572,7 @@ function closeModal() {
   editingConductor.value = null
   form.value = {
     nombre: '',
+    numeroDocumento: '',
     telefono: '',
     direccion: '',
     experiencia: '',
@@ -784,6 +801,7 @@ function formatDate(dateString) {
   margin: 0 0 0.5rem 0;
 }
 
+.conductor-document,
 .conductor-phone,
 .conductor-experience {
   font-size: 0.875rem;
