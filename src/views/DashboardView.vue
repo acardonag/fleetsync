@@ -179,6 +179,63 @@
         </form>
       </div>
     </div>
+
+    <!-- View Vehicle Details Modal -->
+    <div v-if="viewingVehicle" class="modal-overlay" @click.self="viewingVehicle = null">
+      <div class="modal-content modal-large">
+        <div class="modal-header">
+          <h3>Detalles del Vehículo</h3>
+          <button @click="viewingVehicle = null" class="btn-close">✕</button>
+        </div>
+
+        <div class="modal-body vehicle-details-view">
+          <div class="details-header">
+            <div class="vehicle-icon-large">🚗</div>
+            <div class="details-main">
+              <h2>{{ viewingVehicle.placa }}</h2>
+              <p class="detail-large">{{ viewingVehicle.marca }} {{ viewingVehicle.modelo }}</p>
+              <p class="detail-large">📅 Año {{ viewingVehicle.año }}</p>
+              <span :class="['vehicle-status-large', `status-${viewingVehicle.estado}`]">
+                {{ getEstadoLabel(viewingVehicle.estado) }}
+              </span>
+            </div>
+          </div>
+
+          <div class="details-grid">
+            <div class="detail-section">
+              <h4>Información del Vehículo</h4>
+              <p><strong>Placa:</strong> {{ viewingVehicle.placa }}</p>
+              <p><strong>Marca:</strong> {{ viewingVehicle.marca }}</p>
+              <p><strong>Modelo:</strong> {{ viewingVehicle.modelo }}</p>
+              <p><strong>Año:</strong> {{ viewingVehicle.año }}</p>
+              <p><strong>Estado:</strong> {{ getEstadoLabel(viewingVehicle.estado) }}</p>
+            </div>
+
+            <div class="detail-section">
+              <h4>Conductor Asignado</h4>
+              <p v-if="viewingVehicle.conductor">
+                <strong>👤 {{ viewingVehicle.conductor }}</strong>
+              </p>
+              <p v-else class="text-muted">Sin conductor asignado</p>
+            </div>
+
+            <div class="detail-section" v-if="viewingVehicle.createdAt">
+              <h4>Información del Registro</h4>
+              <p><strong>Creado por:</strong> {{ viewingVehicle.createdByName }}</p>
+              <p><strong>Fecha de creación:</strong> {{ formatDateTime(viewingVehicle.createdAt) }}</p>
+              <p v-if="viewingVehicle.updatedAt"><strong>Última actualización:</strong> {{ formatDateTime(viewingVehicle.updatedAt) }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button @click="viewingVehicle = null" class="btn-secondary">Cerrar</button>
+          <button @click="editVehicle(viewingVehicle); viewingVehicle = null" class="btn-primary">
+            Editar
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -193,6 +250,7 @@ const loading = ref(true)
 const saving = ref(false)
 const showAddVehicleModal = ref(false)
 const editingVehicle = ref(null)
+const viewingVehicle = ref(null)
 
 const form = ref({
   placa: '',
@@ -287,7 +345,19 @@ async function deleteVehicle(vehiculo) {
 }
 
 function viewVehicle(vehiculo) {
-  alert(`Ver detalles de ${vehiculo.placa}\n\nEsta funcionalidad se implementará próximamente.`)
+  viewingVehicle.value = vehiculo
+}
+
+function formatDateTime(dateString) {
+  if (!dateString) return ''
+  const date = new Date(dateString)
+  return date.toLocaleString('es-ES', { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  })
 }
 
 function closeModal() {
@@ -697,6 +767,78 @@ function getEstadoLabel(estado) {
 
 .btn-secondary:hover {
   background: #e5e7eb;
+}
+
+.modal-large {
+  max-width: 800px;
+}
+
+.vehicle-details-view {
+  padding: 2rem;
+}
+
+.details-header {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  align-items: center;
+}
+
+.vehicle-icon-large {
+  font-size: 5rem;
+  flex-shrink: 0;
+}
+
+.details-main h2 {
+  font-size: 2rem;
+  margin: 0 0 0.5rem 0;
+  color: #1a1a1a;
+  font-weight: 700;
+}
+
+.detail-large {
+  font-size: 1.125rem;
+  color: #666;
+  margin: 0.25rem 0;
+}
+
+.vehicle-status-large {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.detail-section h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #3b82f6;
+}
+
+.detail-section p {
+  margin: 0.75rem 0;
+  color: #666;
+}
+
+.detail-section strong {
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+.text-muted {
+  color: #9ca3af;
+  font-style: italic;
 }
 
 @media (max-width: 768px) {
