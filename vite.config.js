@@ -4,7 +4,7 @@ import vue from '@vitejs/plugin-vue'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue()],
-  base: '/flota-uber/', // Cambia esto al nombre de tu repositorio en GitHub
+  base: '/fleetsync/', // Nombre del repositorio en GitHub
   build: {
     outDir: 'dist',
     assetsDir: 'assets'
