@@ -66,6 +66,12 @@
           >
             💰 Ingresos
           </button>
+          <button 
+            @click="currentView = 'gastos'" 
+            :class="['nav-item', { active: currentView === 'gastos' }]"
+          >
+            💸 Gastos
+          </button>
         </div>
       </nav>
 
@@ -74,6 +80,7 @@
         <DashboardView v-if="currentView === 'vehiculos'" />
         <ConductoresView v-else-if="currentView === 'conductores'" />
         <IngresosView v-else-if="currentView === 'ingresos'" />
+        <GastosView v-else-if="currentView === 'gastos'" />
       </main>
     </div>
   </div>
@@ -86,6 +93,7 @@ import { ADMIN_USERS } from './firebase/config'
 import DashboardView from './views/DashboardView.vue'
 import ConductoresView from './views/ConductoresView.vue'
 import IngresosView from './views/IngresosView.vue'
+import GastosView from './views/GastosView.vue'
 
 const currentUser = ref(null)
 const currentView = ref('vehiculos')
