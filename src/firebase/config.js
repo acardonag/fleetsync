@@ -22,9 +22,10 @@ export const ADMIN_USERS = [
 // 2. Crea un nuevo proyecto o usa uno existente
 // 3. Habilita Firestore Database (modo producción)
 // 4. Habilita Authentication → Google como proveedor
-// 5. En Project Settings → General → Your apps → Agrega una Web app
-// 6. Copia la configuración y reemplaza los valores arriba
-// 7. Agrega tu email en ADMIN_USERS
+// 5. Habilita Storage (para almacenar documentos de conductores)
+// 6. En Project Settings → General → Your apps → Agrega una Web app
+// 7. Copia la configuración y reemplaza los valores arriba
+// 8. Agrega tu email en ADMIN_USERS
 
 // REGLAS DE FIRESTORE RECOMENDADAS:
 // Ve a Firestore Database → Rules y usa estas reglas:
@@ -53,6 +54,28 @@ service cloud.firestore {
     }
     
     match /servicios/{servicioId} {
+      allow read, write: if isAdmin();
+    }
+  }
+}
+*/
+
+// REGLAS DE STORAGE RECOMENDADAS:
+// Ve a Storage → Rules y usa estas reglas:
+/*
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    function isAdmin() {
+      return request.auth != null && 
+             request.auth.token.email in [
+               'acg1606@gmail.com',
+               'rucardona16@gmail.com'
+             ];
+    }
+    
+    match /conductores/{conductorId}/{document} {
       allow read, write: if isAdmin();
     }
   }

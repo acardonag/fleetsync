@@ -1,223 +1,74 @@
-# ⚡ FleetSync
+# 🚗 Gestión de Flota Uber
 
-**Tu flota siempre en sync**
+Sistema de gestión para administrar flota de vehículos alquilados para trabajar en Uber.
 
-Sistema moderno de gestión de flotas vehiculares para Uber. Control total, en tiempo real, desde cualquier dispositivo.
+## 🚀 Características
 
----
-
-## ✨ Características Principales
-
-- **⚡ Dashboard en Tiempo Real**: Métricas y estadísticas actualizadas al instante
-- **🚗 Gestión de Vehículos**: Control completo de tu flota
-- **👥 Conductores**: Asignación y seguimiento de conductores
-- **💰 Pagos**: Control de pagos semanales/mensuales
-- **🔧 Mantenimiento**: Calendario y alertas de servicio
+- **🚗 Gestión de Vehículos**: Administrar flota de autos
+- **👥 Gestión de Conductores**: Registro y seguimiento de conductores
+- **💰 Control de Pagos**: Seguimiento de pagos semanales/mensuales
+- **🔧 Registro de Mantenimiento**: Historial de servicios y reparaciones
+- **📊 Dashboard y Reportes**: Visualización de métricas importantes
 - **🔐 Autenticación Segura**: Login con Google vía Firebase
-- **📱 100% Responsivo**: Funciona perfecto en desktop, tablet y móvil
-- **📊 Reportes**: Exporta datos para análisis
+- **📱 Diseño Responsivo**: Funciona en desktop, tablet y móvil
 
----
+## 🛠️ Tecnologías
 
-## 🎨 Stack Tecnológico
+- **Frontend**: Vue 3 + Vite
+- **Base de Datos**: Firebase Firestore
+- **Autenticación**: Firebase Auth
+- **Deployment**: GitHub Pages
+- **Estilos**: CSS3 moderno
 
-| Tecnología | Uso |
-|------------|-----|
-| **Vue 3** | Framework frontend (Composition API) |
-| **Vite** | Build tool ultra-rápido |
-| **Firebase Firestore** | Base de datos en tiempo real |
-| **Firebase Auth** | Autenticación segura |
-| **GitHub Pages** | Hosting gratuito |
-| **CSS Variables** | Sistema de diseño moderno |
-
----
-
-## 🚀 Inicio Rápido
-
----
-
-## 🚀 Inicio Rápido
-
-### Instalación Local
+## 📦 Instalación
 
 ```bash
-# Clonar el repositorio
-git clone https://github.com/TU_USUARIO/fleetsync.git
-cd fleetsync
-
 # Instalar dependencias
 npm install
 
-# Configurar Firebase (ver sección siguiente)
-# Editar src/firebase/config.js
-
-# Iniciar servidor de desarrollo
+# Ejecutar en desarrollo
 npm run dev
-```
 
-Abre [http://localhost:5173/fleetsync/](http://localhost:5173/fleetsync/)
+# Compilar para producción
+npm run build
 
----
-
-## ⚙️ Configuración de Firebase
-
-### 1. Crear Proyecto Firebase
-
-1. Ve a [Firebase Console](https://console.firebase.google.com)
-2. Crea un nuevo proyecto
-3. Habilita **Firestore Database** (modo producción)
-4. Habilita **Authentication** → Proveedor Google
-
-### 2. Obtener Credenciales
-
-Project Settings → General → Your apps → Web app
-
-### 3. Configurar en el Proyecto
-
-Edita `src/firebase/config.js`:
-
-```javascript
-export const firebaseConfig = {
-  apiKey: "TU_API_KEY",
-  authDomain: "tu-proyecto.firebaseapp.com",
-  projectId: "tu-proyecto",
-  storageBucket: "tu-proyecto.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:abc123"
-}
-
-export const ADMIN_USERS = [
-  "tu-email@gmail.com"
-]
-```
-
-### 4. Reglas de Firestore
-
-Firestore Database → Rules:
-
-```javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    function isAdmin() {
-      return request.auth != null && 
-             request.auth.token.email in [
-               'tu-email@gmail.com'
-             ];
-    }
-    
-    match /{collection}/{document} {
-      allow read, write: if isAdmin();
-    }
-  }
-}
-```
-
----
-
-## 🌐 Deploy en GitHub Pages
-
-### Deploy Automático (Recomendado)
-
-El proyecto incluye GitHub Actions configurado.
-
-```bash
-# Inicializar repo
-git init
-git add .
-git commit -m "Initial commit"
-
-# Subir a GitHub
-git branch -M main
-git remote add origin https://github.com/TU_USUARIO/fleetsync.git
-git push -u origin main
-```
-
-**Settings → Pages → Source: GitHub Actions**
-
-Cada `git push` desplegará automáticamente.
-
-### Deploy Manual
-
-```bash
+# Deploy a GitHub Pages
 npm run deploy
 ```
 
-Tu app estará en: `https://TU_USUARIO.github.io/fleetsync/`
+## ⚙️ Configuración
 
----
+1. Crea un proyecto en [Firebase Console](https://console.firebase.google.com)
+2. Habilita Firestore Database
+3. Habilita Authentication con Google
+4. Copia tu configuración Firebase en `src/firebase/config.js`
+5. Agrega los emails de administradores autorizados
 
-## 📁 Estructura
+## 📁 Estructura del Proyecto
 
 ```
-fleetsync/
-├── .github/workflows/     # CI/CD automático
+flota-uber/
 ├── src/
-│   ├── components/        # Componentes reutilizables
-│   ├── views/            # Páginas principales
-│   ├── firebase/         # Config y servicios
-│   ├── composables/      # Lógica compartida
-│   ├── assets/           # Imágenes, estilos
+│   ├── components/       # Componentes Vue reutilizables
+│   ├── views/            # Vistas/páginas principales
+│   ├── firebase/         # Configuración y servicios Firebase
+│   ├── composables/      # Lógica reutilizable (Vue Composition API)
+│   ├── assets/           # Imágenes, estilos globales
 │   ├── App.vue           # Componente raíz
-│   ├── main.js           # Entry point
-│   └── style.css         # Estilos globales
-├── public/               # Assets estáticos
+│   └── main.js           # Punto de entrada
+├── public/               # Archivos estáticos
+├── .github/              # GitHub Actions workflows
 ├── index.html
 ├── vite.config.js
 └── package.json
 ```
 
----
+## 🔐 Seguridad
 
-## 🎯 Roadmap
+- Solo usuarios autorizados pueden acceder al sistema
+- Reglas de Firestore configuradas para validar permisos
+- Authentication con Google para login seguro
 
-- [x] Sistema de autenticación
-- [x] CRUD de vehículos
-- [x] Dashboard con estadísticas
-- [ ] Gestión de conductores completa
-- [ ] Control de pagos y adeudos
-- [ ] Calendario de mantenimiento
-- [ ] Reportes exportables (PDF/Excel)
-- [ ] Notificaciones push
-- [ ] Modo oscuro
-- [ ] PWA (Progressive Web App)
+## 📄 Licencia
 
----
-
-## 🛠️ Scripts
-
-```bash
-npm run dev      # Desarrollo (http://localhost:5173)
-npm run build    # Build para producción
-npm run preview  # Preview del build
-npm run deploy   # Build + Deploy a GitHub Pages
-```
-
----
-
-## 🎨 Paleta de Colores
-
-FleetSync usa un sistema de diseño moderno con CSS Variables:
-
-- **Primary**: Electric Blue (#3b82f6)
-- **Accent**: Cyan (#06b6d4)
-- **Success**: Green (#22c55e)
-- **Warning**: Amber (#f59e0b)
-- **Danger**: Red (#ef4444)
-- **Neutrals**: Slate (50-900)
-
----
-
-## 📝 Licencia
-
-MIT License - Úsalo como quieras
-
----
-
-## 💡 Soporte
-
-¿Problemas? Abre un [issue](https://github.com/TU_USUARIO/fleetsync/issues)
-
----
-
-**Hecho con ⚡ y Vue 3**
+MIT

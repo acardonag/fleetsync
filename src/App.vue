@@ -45,9 +45,28 @@
         </div>
       </header>
 
+      <!-- Navigation -->
+      <nav class="app-nav">
+        <div class="nav-content">
+          <button 
+            @click="currentView = 'vehiculos'" 
+            :class="['nav-item', { active: currentView === 'vehiculos' }]"
+          >
+            🚗 Vehículos
+          </button>
+          <button 
+            @click="currentView = 'conductores'" 
+            :class="['nav-item', { active: currentView === 'conductores' }]"
+          >
+            👥 Conductores
+          </button>
+        </div>
+      </nav>
+
       <!-- Main Content -->
       <main class="main-content">
-        <DashboardView />
+        <DashboardView v-if="currentView === 'vehiculos'" />
+        <ConductoresView v-else-if="currentView === 'conductores'" />
       </main>
     </div>
   </div>
@@ -58,8 +77,10 @@ import { ref, onMounted } from 'vue'
 import { auth, signInWithGoogle, signOutUser, onAuthChange } from './firebase/auth'
 import { ADMIN_USERS } from './firebase/config'
 import DashboardView from './views/DashboardView.vue'
+import ConductoresView from './views/ConductoresView.vue'
 
 const currentUser = ref(null)
+const currentView = ref('vehiculos')
 const loading = ref(false)
 const errorMessage = ref('')
 
@@ -276,10 +297,49 @@ async function signOut() {
   transform: translateY(-1px);
 }
 
+.app-nav {
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.nav-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.nav-item {
+  padding: 1rem 1.5rem;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: #6b7280;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.nav-item:hover {
+  color: #1f2937;
+  background: #f9fafb;
+}
+
+.nav-item.active {
+  color: #3b82f6;
+  border-bottom-color: #3b82f6;
+  background: #f0f7ff;
+}
+
 .main-content {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 2rem 1.5rem;
+  padding: 0;
 }
 
 @media (max-width: 768px) {
@@ -290,9 +350,14 @@ async function signOut() {
   .header-content {
     padding: 1rem;
   }
-  
-  .main-content {
-    padding: 1rem;
+
+  .nav-content {
+    padding: 0 1rem;
+  }
+
+  .nav-item {
+    padding: 0.875rem 1rem;
+    font-size: 0.875rem;
   }
 }
 </style>

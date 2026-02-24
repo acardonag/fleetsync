@@ -1,8 +1,8 @@
 <template>
-  <div class="dashboard">
-    <div class="dashboard-header">
-      <h2 class="dashboard-title">Panel de Control</h2>
-      <div class="dashboard-actions">
+  <div class="vehiculos-view">
+    <div class="view-header">
+      <h2 class="view-title">Gestión de Vehículos</h2>
+      <div class="view-actions">
         <button @click="showAddVehicleModal = true" class="btn-primary">
           ➕ Agregar Vehículo
         </button>
@@ -45,8 +45,7 @@
     </div>
 
     <!-- Vehicles List -->
-    <div class="vehicles-section">
-      <h3 class="section-title">Vehículos</h3>
+    <div class="content-section">
       
       <div v-if="loading" class="loading-container">
         <div class="spinner"></div>
@@ -161,12 +160,12 @@
 
           <div class="form-group">
             <label class="form-label">Conductor Actual</label>
-            <input 
-              v-model="form.conductor" 
-              type="text" 
-              class="form-input" 
-              placeholder="Nombre del conductor (opcional)"
-            />
+            <select v-model="form.conductor" class="form-select">
+              <option value="">Sin conductor asignado</option>
+              <option v-for="conductor in conductores" :key="conductor.id" :value="conductor.nombre">
+                {{ conductor.nombre }}
+              </option>
+            </select>
           </div>
 
           <div class="modal-footer">
@@ -186,6 +185,8 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { createDocument, getAllDocuments, updateDocument, deleteDocument } from '../firebase/db'
+
+const conductores = ref([])
 
 const vehiculos = ref([])
 const loading = ref(true)
@@ -215,7 +216,7 @@ const vehiculosMantenimiento = computed(() =>
 )
 
 onMounted(async () => {
-  await loadVehicles()
+  await Promise.all([loadVehicles(), loadConductores()])
 })
 
 async function loadVehicles() {
@@ -227,6 +228,14 @@ async function loadVehicles() {
     alert('Error al cargar los vehículos')
   } finally {
     loading.value = false
+  }
+}
+
+async function loadConductores() {
+  try {
+    conductores.value = await getAllDocuments('conductores', 'createdAt')
+  } catch (error) {
+    console.error('Error loading conductores:', error)
   }
 }
 
@@ -305,64 +314,75 @@ function getEstadoLabel(estado) {
 </script>
 
 <style scoped>
-.dashboard {
-  width: 100%;
+.vehiculos-view {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-.dashboard-header {
+.view-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
-  flex-wrap: wrap;
-  gap: 1rem;
 }
 
-.dashboard-title {
+.view-title {
   font-size: 2rem;
   font-weight: 700;
-  color: #1f2937;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.view-actions {
+  display: flex;
+  gap: 1rem;
 }
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
 
 .stat-card {
   background: white;
+  border-radius: 12px;
   padding: 1.5rem;
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
   gap: 1rem;
-  border: 1px solid #e2e8f0;
-  transition: all 0.3s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .stat-card:hover {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   transform: translateY(-2px);
-  border-color: #3b82f6;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .stat-icon {
   font-size: 2.5rem;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f7ff;
+  border-radius: 12px;
 }
 
 .stat-icon.disponible {
-  filter: hue-rotate(90deg);
+  background: #e8f5e9;
 }
 
 .stat-icon.ocupado {
-  filter: hue-rotate(200deg);
+  background: #e3f2fd;
 }
 
 .stat-icon.mantenimiento {
-  filter: hue-rotate(30deg);
+  background: #fff3e0;
 }
 
 .stat-content {
@@ -372,33 +392,41 @@ function getEstadoLabel(estado) {
 .stat-value {
   font-size: 2rem;
   font-weight: 700;
-  color: #1f2937;
-  line-height: 1;
+  color: #1a1a1a;
+  margin-bottom: 0.25rem;
 }
 
 .stat-label {
   font-size: 0.875rem;
-  color: #6b7280;
-  margin-top: 0.25rem;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.vehicles-section {
+.content-section {
   background: white;
-  padding: 1.5rem;
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.section-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #1f2937;
-  margin-bottom: 1.5rem;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .loading-container {
   text-align: center;
-  padding: 3rem;
+  padding: 4rem 2rem;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid #f0f0f0;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 .empty-state {
@@ -407,38 +435,39 @@ function getEstadoLabel(estado) {
 }
 
 .empty-icon {
-  font-size: 4rem;
+  font-size: 5rem;
   margin-bottom: 1rem;
   opacity: 0.5;
 }
 
 .empty-state h3 {
   font-size: 1.5rem;
-  color: #1f2937;
+  color: #1a1a1a;
   margin-bottom: 0.5rem;
 }
 
 .empty-state p {
-  color: #6b7280;
-  margin-bottom: 1.5rem;
+  color: #666;
+  margin-bottom: 2rem;
 }
 
 .vehicles-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.5rem;
 }
 
 .vehicle-card {
+  background: white;
   border: 1px solid #e5e7eb;
-  border-radius: 0.75rem;
-  padding: 1.25rem;
-  transition: all 0.2s;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .vehicle-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 .vehicle-header {
@@ -482,71 +511,75 @@ function getEstadoLabel(estado) {
 }
 
 .vehicle-placa {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #1f2937;
-  margin-bottom: 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 0.5rem 0;
 }
 
 .vehicle-info {
   font-size: 0.875rem;
-  color: #6b7280;
-  margin-bottom: 0.25rem;
+  color: #666;
+  margin: 0.25rem 0;
 }
 
 .vehicle-conductor {
   font-size: 0.875rem;
   color: #3b82f6;
   font-weight: 600;
-  margin-top: 0.5rem;
+  margin: 0.5rem 0 0 0;
 }
 
 .vehicle-actions {
   display: flex;
   gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid #f0f0f0;
 }
 
 .btn-icon {
-  flex: 1;
-  padding: 0.5rem;
-  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-  border: 1px solid #cbd5e1;
-  border-radius: 0.5rem;
-  font-size: 1.25rem;
+  background: #f3f4f6;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.125rem;
+  transition: background 0.2s;
 }
 
 .btn-icon:hover {
-  background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
-  transform: scale(1.05);
-  border-color: #94a3b8;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  background: #e5e7eb;
 }
 
 .btn-danger-icon:hover {
-  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-  border-color: #f87171;
+  background: #fee2e2;
 }
 
 /* Modal Styles */
 .modal-overlay {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
   z-index: 1000;
+  padding: 1rem;
 }
 
 .modal-content {
   background: white;
-  border-radius: 0.75rem;
-  max-width: 500px;
+  border-radius: 12px;
+  max-width: 600px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
@@ -562,9 +595,10 @@ function getEstadoLabel(estado) {
 }
 
 .modal-header h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #1f2937;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
 }
 
 .btn-close {
@@ -572,47 +606,116 @@ function getEstadoLabel(estado) {
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
-  color: #6b7280;
-  padding: 0;
+  color: #666;
   width: 32px;
   height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0.5rem;
-  transition: all 0.2s;
+  border-radius: 4px;
+  transition: background 0.2s;
 }
 
 .btn-close:hover {
   background: #f3f4f6;
-  color: #1f2937;
 }
 
 .modal-body {
   padding: 1.5rem;
 }
 
-.modal-footer {
+.form-group {
   display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-  padding-top: 1rem;
-  border-top: 1px solid #e5e7eb;
-  margin-top: 1rem;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-@media (max-width: 640px) {
-  .dashboard-header {
+.form-label {
+  font-weight: 600;
+  color: #1a1a1a;
+  font-size: 0.875rem;
+}
+
+.form-input,
+.form-select {
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-input:focus,
+.form-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.btn-primary {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover {
+  background: #2563eb;
+}
+
+.btn-primary:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: #f3f4f6;
+  color: #1a1a1a;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-secondary:hover {
+  background: #e5e7eb;
+}
+
+@media (max-width: 768px) {
+  .vehiculos-view {
+    padding: 1rem;
+  }
+
+  .view-header {
     flex-direction: column;
-    align-items: flex-start;
+    gap: 1rem;
+    align-items: stretch;
   }
-  
-  .dashboard-actions {
-    width: 100%;
+
+  .stats-grid {
+    grid-template-columns: 1fr;
   }
-  
-  .dashboard-actions button {
-    width: 100%;
+
+  .vehicles-grid {
+    grid-template-columns: 1fr;
   }
 }
 </style>
