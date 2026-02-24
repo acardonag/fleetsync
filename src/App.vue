@@ -72,6 +72,12 @@
           >
             💸 Gastos
           </button>
+          <button 
+            @click="currentView = 'mantenimientos'" 
+            :class="['nav-item', { active: currentView === 'mantenimientos' }]"
+          >
+            🔧 Mantenimientos
+          </button>
         </div>
       </nav>
 
@@ -81,6 +87,7 @@
         <ConductoresView v-else-if="currentView === 'conductores'" />
         <IngresosView v-else-if="currentView === 'ingresos'" />
         <GastosView v-else-if="currentView === 'gastos'" />
+        <MantenimientosView v-else-if="currentView === 'mantenimientos'" />
       </main>
     </div>
   </div>
@@ -94,6 +101,7 @@ import DashboardView from './views/DashboardView.vue'
 import ConductoresView from './views/ConductoresView.vue'
 import IngresosView from './views/IngresosView.vue'
 import GastosView from './views/GastosView.vue'
+import MantenimientosView from './views/MantenimientosView.vue'
 
 const currentUser = ref(null)
 const currentView = ref('vehiculos')

@@ -1146,6 +1146,15 @@ async function saveGasto() {
       gastos.value.push(result)
     }
 
+    // Actualizar KM del vehículo si se proporcionó
+    if (form.value.kilometrajeActual) {
+      const vehiculoData = {
+        kilometrajeActual: form.value.kilometrajeActual,
+        ultimaActualizacionKm: new Date()
+      }
+      await updateDocument('vehiculos', form.value.vehiculoId, vehiculoData)
+    }
+
     closeModal()
     updateCharts()
   } catch (error) {

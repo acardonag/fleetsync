@@ -695,6 +695,15 @@ async function saveIngreso() {
       await createDocument('ingresos', ingresoData)
     }
 
+    // Actualizar KM del vehículo si se proporcionó
+    if (form.value.kilometraje) {
+      const vehiculoData = {
+        kilometrajeActual: form.value.kilometraje,
+        ultimaActualizacionKm: new Date()
+      }
+      await updateDocument('vehiculos', form.value.vehiculoId, vehiculoData)
+    }
+
     await loadData()
     closeModal()
   } catch (error) {
