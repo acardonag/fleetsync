@@ -49,6 +49,10 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
     
+    match /ingresos/{ingresoId} {
+      allow read, write: if isAdmin();
+    }
+    
     match /pagos/{pagoId} {
       allow read, write: if isAdmin();
     }

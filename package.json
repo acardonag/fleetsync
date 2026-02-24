@@ -10,8 +10,10 @@
     "deploy": "npm run build && gh-pages -d dist"
   },
   "dependencies": {
+    "chart.js": "^4.5.1",
     "firebase": "^10.7.1",
-    "vue": "^3.4.21"
+    "vue": "^3.4.21",
+    "vue-chartjs": "^5.3.3"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",
